@@ -37,7 +37,7 @@
   }
 
   function configure() {
-    const popupUrl = `${window.location.origin}/Extensiones/Samples/AutoRefresh_seconds/AutoRefreshDialog.html`;
+    const popupUrl = `${window.location.origin}/AutoRefreshDialog.html`;
     tableau.extensions.ui
       .displayDialogAsync(popupUrl, DEFAULT_INTERVAL_SEC.toString(), { height: 500, width: 500 })
       .then((closePayload) => {
