@@ -112,4 +112,9 @@
     const el = document.getElementById(id);
     if (el) el.textContent = value;
   }
+
+  // 🔑 Expose configure() so HTML can call it
+  window.AutoRefresh = window.AutoRefresh || {};
+  window.AutoRefresh.configure = configure;
+
 })();
