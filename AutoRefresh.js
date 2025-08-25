@@ -14,18 +14,24 @@
           tableau.TableauEventType.SettingsChanged,
           (evt) => updateExtensionBasedOnSettings(evt.newSettings)
         );
+
+        // First time setup: if not configured, open dialog
         if (tableau.extensions.settings.get("configured") !== "1") {
           configure();
         }
       });
   });
 
+  // ---------------- SETTINGS ----------------
   function getSettings() {
     const settings = tableau.extensions.settings.getAll();
+
     if (settings.selectedDatasources) {
       activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
     }
+
     const interval = settings.intervalkey || DEFAULT_INTERVAL_SEC;
+
     if (activeDatasourceIdList.length) {
       toggleUI(true);
       updateUI("interval", interval);
@@ -36,11 +42,14 @@
     }
   }
 
+  // ---------------- CONFIGURE ----------------
   function configure() {
     const popupUrl = "https://bcs-041.github.io/AutoRefreshDialog.html";
+
     tableau.extensions.ui
       .displayDialogAsync(popupUrl, DEFAULT_INTERVAL_SEC.toString(), { height: 500, width: 500 })
       .then((closePayload) => {
+        // closePayload = interval chosen in dialog
         toggleUI(true);
         updateUI("interval", closePayload);
         setupRefreshInterval(Number(closePayload));
@@ -54,6 +63,7 @@
       });
   }
 
+  // ---------------- REFRESH ----------------
   function setupRefreshInterval(intervalSec) {
     clearInterval(refreshIntervalId);
 
@@ -61,6 +71,7 @@
       const dashboard = tableau.extensions.dashboardContent.dashboard;
       const uniqueIds = new Set();
       uniqueDataSources = [];
+
       await Promise.all(
         dashboard.worksheets.map((ws) =>
           ws.getDataSourcesAsync().then((datasources) => {
@@ -73,6 +84,7 @@
           })
         )
       );
+
       updateUI("uniqueCount", uniqueDataSources.length);
     };
 
@@ -96,10 +108,15 @@
     updateUI("nextrefresh", nextRefresh.toLocaleTimeString());
   }
 
+  // ---------------- UI UPDATES ----------------
   function updateExtensionBasedOnSettings(settings) {
     if (settings.selectedDatasources) {
       activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
       updateUI("datasourceCount", activeDatasourceIdList.length);
+    }
+    if (settings.intervalkey) {
+      updateUI("interval", settings.intervalkey);
+      setupRefreshInterval(Number(settings.intervalkey));
     }
   }
 
@@ -113,8 +130,7 @@
     if (el) el.textContent = value;
   }
 
-  // 🔑 Expose configure() so HTML can call it
+  // 🔑 Expose configure() globally so HTML button can use it
   window.AutoRefresh = window.AutoRefresh || {};
   window.AutoRefresh.configure = configure;
-
 })();
