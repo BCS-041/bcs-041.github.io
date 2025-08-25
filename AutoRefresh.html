@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Refresh Settings</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Tableau Extensions Library -->
+  <script src="<script src="./lib/tableau.extensions.1.latest.js"></script>
+
+  <!-- Custom Script -->
+  <script src="./AutoRefresh.js" defer></script>
+
+  <style>
+    body {
+      padding-top: 40px;
+      background-color: #f9f9f9;
+    }
+    .branding img {
+      max-height: 80px;
+    }
+    .status-info {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container text-center">
+
+    <!-- Branding Section -->
+    <div class="row align-items-center mb-4 branding">
+      <div class="col-6 text-start">
+        <img src="C:\Users\BCS-41\Downloads\TBIX automation code\images.png" alt="Data Refresh Logo" class="img-fluid">
+      </div>
+      <div class="col-6 text-end">
+        <img src="C:\Users\BCS-41\Downloads\TBIX automation code\logo prosperitas.png" alt="Prosperitas Logo" class="img-fluid">
+      </div>
+    </div>
+
+    <!-- Active Refresh Status -->
+    <div id="active" class="status-info d-none" aria-live="polite">
+      <p>
+        Refreshing <strong><span id="datasourceCount">0</span></strong> datasource(s) every 
+        <strong><span id="interval">5</span></strong> seconds.  
+        Next refresh at <strong><span id="nextrefresh">12:00:00</span></strong>.
+      </p>
+      <p>Unique datasources: <strong><span id="uniqueCount">0</span></strong></p>
+    </div>
+
+    <!-- Inactive Status -->
+    <div id="inactive" class="status-info">
+      <p class="lead text-muted">Configure settings to continue.</p>
+    </div>
+
+  </div>
+
+  <!-- Bootstrap JS (no jQuery needed in v5) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
