@@ -13,11 +13,11 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-  <!-- Tableau Extension Library -->
+  <!-- Tableau Extensions API (official CDN) -->
   <script src="https://tableau.github.io/extensions-api/lib/tableau.extensions.1.latest.js"></script>
 
   <!-- Extension Script -->
-  <script src="./AutoRefreshDialog.js"></script>
+  <script src="AutoRefreshDialog.js"></script>
 
   <!-- Custom Styles -->
   <style>
@@ -44,10 +44,11 @@
     <!-- Branding Row -->
     <div class="row branding">
       <div class="col-xs-6 text-left">
+        <!-- Make sure these files exist in your repo root -->
         <img src="./images.png" alt="Data Refresh" class="img-responsive">
       </div>
       <div class="col-xs-6 text-right">
-        <img src="./logo prosperitas.png" alt="Prosperitas Logo" class="img-responsive">
+        <img src="./logo.jpg" alt="Prosperitas Logo" class="img-responsive">
       </div>
     </div>
 
@@ -67,7 +68,10 @@
     <!-- Interval Section -->
     <div class="form-section">
       <label for="interval"><strong>Refresh Interval (in seconds):</strong></label>
-      <input type="number" id="interval" class="form-control" min="15" max="3600" placeholder="Enter seconds (15 - 3600)" style="max-width: 250px;">
+      <input type="number" id="interval" class="form-control"
+             min="15" max="3600"
+             placeholder="Enter seconds (15 - 3600)"
+             style="max-width: 250px;">
     </div>
 
     <!-- Action Button -->
