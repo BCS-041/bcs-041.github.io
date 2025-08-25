@@ -7,7 +7,7 @@
   let uniqueDataSources = [];
 
   document.addEventListener("DOMContentLoaded", () => {
-    tableau.extensions.initializeAsync({ configure })
+    tableau.extensions.initializeAsync()
       .then(() => {
         getSettings();
         tableau.extensions.settings.addEventListener(
@@ -15,23 +15,20 @@
           (evt) => updateExtensionBasedOnSettings(evt.newSettings)
         );
 
-        // First time setup: if not configured, open dialog
         if (tableau.extensions.settings.get("configured") !== "1") {
           configure();
         }
-      });
+      })
+      .catch((err) => console.error("Extension init error:", err));
   });
 
-  // ---------------- SETTINGS ----------------
   function getSettings() {
     const settings = tableau.extensions.settings.getAll();
-
     if (settings.selectedDatasources) {
       activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
     }
 
     const interval = settings.intervalkey || DEFAULT_INTERVAL_SEC;
-
     if (activeDatasourceIdList.length) {
       toggleUI(true);
       updateUI("interval", interval);
@@ -42,17 +39,27 @@
     }
   }
 
-  // ---------------- CONFIGURE ----------------
   function configure() {
-    const popupUrl = "https://bcs-041.github.io/AutoRefreshDialog.html";
+    const baseUrl = window.location.origin;
+    const popupUrl = `${baseUrl}/AutoRefreshDialog.html`;
 
     tableau.extensions.ui
       .displayDialogAsync(popupUrl, DEFAULT_INTERVAL_SEC.toString(), { height: 500, width: 500 })
       .then((closePayload) => {
-        // closePayload = interval chosen in dialog
         toggleUI(true);
-        updateUI("interval", closePayload);
-        setupRefreshInterval(Number(closePayload));
+
+        // Try parsing payload safely
+        let interval = Number(closePayload);
+        if (isNaN(interval)) {
+          try { interval = Number(JSON.parse(closePayload)); } catch {}
+        }
+
+        if (!interval || isNaN(interval)) {
+          interval = DEFAULT_INTERVAL_SEC;
+        }
+
+        updateUI("interval", interval);
+        setupRefreshInterval(interval);
       })
       .catch((error) => {
         if (error.errorCode === tableau.ErrorCodes.DialogClosedByUser) {
@@ -63,7 +70,6 @@
       });
   }
 
-  // ---------------- REFRESH ----------------
   function setupRefreshInterval(intervalSec) {
     clearInterval(refreshIntervalId);
 
@@ -89,11 +95,23 @@
     };
 
     const refreshDataSources = async () => {
+      if (uniqueDataSources.length === 0) {
+        console.warn("No valid datasources selected for refresh.");
+        return;
+      }
       try {
         await Promise.all(uniqueDataSources.map((ds) => ds.refreshAsync()));
         updateNextRefreshTime(intervalSec);
+        updateUI("errorMessage", "");
+        const errBox = document.getElementById("errorMessage");
+        if (errBox) errBox.classList.add("d-none");
       } catch (err) {
         console.error("Error refreshing datasources:", err);
+        const errBox = document.getElementById("errorMessage");
+        if (errBox) {
+          errBox.textContent = "⚠️ Error refreshing datasources. Check connection or permissions.";
+          errBox.classList.remove("d-none");
+        }
       }
     };
 
@@ -108,7 +126,6 @@
     updateUI("nextrefresh", nextRefresh.toLocaleTimeString());
   }
 
-  // ---------------- UI UPDATES ----------------
   function updateExtensionBasedOnSettings(settings) {
     if (settings.selectedDatasources) {
       activeDatasourceIdList = JSON.parse(settings.selectedDatasources);
@@ -121,8 +138,11 @@
   }
 
   function toggleUI(isActive) {
-    document.getElementById("active").classList.toggle("d-none", !isActive);
-    document.getElementById("inactive").classList.toggle("d-none", isActive);
+    const activeEl = document.getElementById("active");
+    const inactiveEl = document.getElementById("inactive");
+
+    if (activeEl) activeEl.classList.toggle("d-none", !isActive);
+    if (inactiveEl) inactiveEl.classList.toggle("d-none", isActive);
   }
 
   function updateUI(id, value) {
@@ -130,7 +150,6 @@
     if (el) el.textContent = value;
   }
 
-  // 🔑 Expose configure() globally so HTML button can use it
   window.AutoRefresh = window.AutoRefresh || {};
   window.AutoRefresh.configure = configure;
 })();
