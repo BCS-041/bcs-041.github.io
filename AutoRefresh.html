@@ -1,82 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Auto Refresh Extension</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  
-  <!-- Tableau Extensions API -->
-  <script src="https://tableau.github.io/extensions-api/lib/tableau.extensions.1.latest.js"></script>
-  
-  <style>
-    body { padding: 20px; font-family: Arial, sans-serif; }
-    .branding { margin-bottom: 20px; }
-    .branding img { max-height: 60px; }
-    #active, #inactive { border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-top: 10px; }
-    #active { background: #f9fdf9; }
-    #inactive { background: #fdf9f9; }
-    #reconfigureBtn { margin-top: 15px; }
-    .d-none { display: none !important; } /* mimic Bootstrap 4 utility */
-  </style>
-</head>
-<body>
-  <div class="container">
-    <!-- Branding row with images -->
-    <div class="row branding">
-      <div class="col-xs-6 text-left">
-        <img src="https://raw.githubusercontent.com/BCS-041/bcs-041.github.io/b7c1474a8a30f53504285186546f4792fe362f12/images.png" 
-             alt="Data Refresh" class="img-responsive">
-      </div>
-      <div class="col-xs-6 text-right">
-        <img src="https://raw.githubusercontent.com/BCS-041/bcs-041.github.io/b7c1474a8a30f53504285186546f4792fe362f12/logo%20prosperitas.png" 
-             alt="Prosperitas Logo" class="img-responsive">
-      </div>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings Sample</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
+    <script src="../../lib/tableau.extensions.1.latest.js"></script>
+    <script src="./AutoRefresh.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <p id="mainContent">
+        <div id="active" style="display: none;">
+          <p>Refreshing <b><span id="datasourceCount">0</span></b> datasource(s) every <b><span id="interval">5</span></b> seconds. Next refresh at <b><span id="nextrefresh">12:00:00</span></b></p>
+          <p>Unique datasources <span id="uniqueCount">0</span></p>
+        </div>
+        <div id="inactive">
+          <table style="margin-bottom:0px">
+            <tbody>
+              <tr>
+                <td style="vertical-align:middle;">
+                  <img src="images.png" style="width: 30%; min-width: 150px;vertical-align: middle;">
+                </td>
+                <td style="text-align: right;vertical-align:middle;">
+                  <img src="logo prosperitas.png" alt="Tableau" style="width: 28%; min-width: 120px;">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+            <p>Configure extension to proceed.</p>
+        </div>
+      </p>
     </div>
-
-    <!-- Inactive State -->
-    <div id="inactive">
-      <h3>Auto Refresh Extension</h3>
-      <p class="text-muted">Automatically updates selected data sources at a specified interval.</p>
-      <hr>
-      <p><strong>Status:</strong> Not configured yet.</p>
-      <p>Please click <strong>Configure</strong> from the extension menu to set it up.</p>
-    </div>
-
-    <!-- Active State -->
-    <div id="active" class="d-none">
-      <h3>Auto Refresh Extension</h3>
-      <p class="text-muted">Automatically updates selected data sources at a specified interval.</p>
-      <hr>
-      <p><strong>Interval:</strong> <span id="interval"></span> seconds</p>
-      <p><strong>Datasources Selected:</strong> <span id="datasourceCount"></span></p>
-      <p><strong>Unique Datasources Found:</strong> <span id="uniqueCount"></span></p>
-      <p><strong>Next Refresh:</strong> <span id="nextrefresh"></span></p>
-
-      <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
-      <button id="reconfigureBtn" class="btn btn-warning">Reconfigure</button>
-    </div>
-  </div>
-
-  <!-- Extension Script (placed at bottom for safety) -->
-  <script src="AutoRefresh.js"></script>
-  
-  <!-- Inline script for reconfigure button -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const reconfigureBtn = document.getElementById("reconfigureBtn");
-      if (reconfigureBtn) {
-        reconfigureBtn.addEventListener("click", () => {
-          if (window.AutoRefresh && typeof window.AutoRefresh.configure === "function") {
-            window.AutoRefresh.configure();
-          } else {
-            console.error("AutoRefresh.configure() not found. Check AutoRefresh.js");
-          }
-        });
-      }
-    });
-  </script>
-</body>
+  </body>
 </html>
